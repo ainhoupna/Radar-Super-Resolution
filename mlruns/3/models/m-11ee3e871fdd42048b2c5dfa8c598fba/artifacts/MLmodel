@@ -1,0 +1,23 @@
+artifact_path: /home/alumno/Desktop/datos/inigo.goikoetxea/Computer Vision/final/mlruns/3/models/m-11ee3e871fdd42048b2c5dfa8c598fba/artifacts
+flavors:
+  python_function:
+    config:
+      device: null
+    data: data
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.pytorch
+    pickle_module_name: mlflow.pytorch.pickle_module
+    python_version: 3.13.7
+  pytorch:
+    code: null
+    model_data: data
+    pytorch_version: 2.8.0+cu128
+mlflow_version: 3.7.0
+model_id: m-11ee3e871fdd42048b2c5dfa8c598fba
+model_size_bytes: 10276015
+model_uuid: m-11ee3e871fdd42048b2c5dfa8c598fba
+prompts: null
+run_id: 4a3cfe49ee354b43a493c8c9e8d5debe
+utc_time_created: '2025-12-18 23:13:47.398158'
