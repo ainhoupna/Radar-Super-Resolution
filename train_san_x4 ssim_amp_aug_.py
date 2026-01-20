@@ -18,14 +18,14 @@ from models.san.san import SAN
 TRAIN_DIR = "dataset_split/train"
 VAL_DIR = "dataset_split/val"
 
-SCALE_FACTOR = 2       
+SCALE_FACTOR = 4       
 N_RESGROUPS = 10       # SAN specific: number of residual groups
 N_RESBLOCKS = 10       # SAN specific: number of residual blocks per group
 N_FEATS = 64           
 REDUCTION = 16         # SAN specific: reduction factor for attention
 RES_SCALE = 1.0        
 
-BATCH_SIZE = 32        # SAN is more memory intensive than EDSR
+BATCH_SIZE = 32        
 LEARNING_RATE = 1e-4   
 EPOCHS = 60           
 PATIENCE = 7          
@@ -69,7 +69,7 @@ class EarlyStopping:
             self.best_score = score
             self.counter = 0
 
-# --- 2. Dataset Loader with Dihedral Augmentation ---
+# --- 2. Dataset Loader ---
 class RadarDataset(Dataset):
     def __init__(self, root_dir, scale, augment=False):
         self.root_dir = root_dir

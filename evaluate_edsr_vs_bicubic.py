@@ -159,10 +159,6 @@ def compute_metrics(target_hr, image_sr):
 
 def calculate_metrics(model, scale_factor):
     """Performs metric calculation over the entire test set."""
-    if model is None:
-        print(f"Skipping metric calculation for x{scale_factor} due to missing model.")
-        return None
-
     test_files = [f for f in os.listdir(TEST_DIR) if f.endswith('.safetensors')]
     if not test_files:
         print(f"Error: No test files found in {TEST_DIR}.")
@@ -185,22 +181,37 @@ def calculate_metrics(model, scale_factor):
             hr_tensor = tensors['HR'].squeeze(0).unsqueeze(0) # (C, H, W)
             
             # 1. EDSR Prediction
-            # Needs (N, C, H, W) input on the device
-            lr_input_edsr = lr_tensor_cpu.unsqueeze(0).to(DEVICE)
-            edsr_sr = model(lr_input_edsr).squeeze(0).cpu() # Output back to CPU
-            edsr_sr = torch.clamp(edsr_sr, 0, 1)
+            if model is not None:
+                # Needs (N, C, H, W) input on the device
+                lr_input_edsr = lr_tensor_cpu.unsqueeze(0).to(DEVICE)
+                edsr_sr = model(lr_input_edsr).squeeze(0).cpu() # Output back to CPU
+                edsr_sr = torch.clamp(edsr_sr, 0, 1)
+                psnr_edsr, ssim_edsr = compute_metrics(hr_tensor, edsr_sr)
+                edsr_psnr_list.append(psnr_edsr)
+                edsr_ssim_list.append(ssim_edsr)
 
             # 2. Bicubic Baseline (Uses (C, H, W) tensor, function handles device move)
             bicubic_sr = upsample_bicubic(lr_tensor_cpu, scale_factor)
 
             # 3. Compute Metrics (All tensors are now on CPU)
-            psnr_edsr, ssim_edsr = compute_metrics(hr_tensor, edsr_sr)
             psnr_bicubic, ssim_bicubic = compute_metrics(hr_tensor, bicubic_sr)
             
-            edsr_psnr_list.append(psnr_edsr)
-            edsr_ssim_list.append(ssim_edsr)
             bicubic_psnr_list.append(psnr_bicubic)
             bicubic_ssim_list.append(ssim_bicubic)
+
+    avg_edsr_psnr = np.mean(edsr_psnr_list) if edsr_psnr_list else 0.0
+    avg_edsr_ssim = np.mean(edsr_ssim_list) if edsr_ssim_list else 0.0
+    avg_bicubic_psnr = np.mean(bicubic_psnr_list)
+    avg_bicubic_ssim = np.mean(bicubic_ssim_list)
+
+    results = {
+        'scale': scale_factor,
+        'EDSR_PSNR': avg_edsr_psnr,
+        'EDSR_SSIM': avg_edsr_ssim,
+        'BICUBIC_PSNR': avg_bicubic_psnr,
+        'BICUBIC_SSIM': avg_bicubic_ssim
+    }
+    return results
 
     avg_edsr_psnr = np.mean(edsr_psnr_list)
     avg_edsr_ssim = np.mean(edsr_ssim_list)
