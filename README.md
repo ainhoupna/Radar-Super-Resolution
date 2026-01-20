@@ -1,7 +1,7 @@
 # Deep Learning-based Super-Resolution for Meteorological Radar Imagery
 
 <p align="center">
-  <strong>Enhancing radar reflectivity data from 1km to 250m resolution using Second-order Attention Networks</strong>
+  <strong>Enhancing radar reflectivity data from 1km to 250m resolution using ESDR and Second-order Attention Networks</strong>
 </p>
 
 <p align="center">
